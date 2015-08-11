@@ -212,12 +212,7 @@ public class PDAServicesImpl implements IPDAServices {
 		PoliceCheck pc = (PoliceCheck) JSONObject.toBean(boObject,
 				PoliceCheck.class);
 		pc.setTime(new Date());
-		
 		pc.setTimes(adm.getMaxNumber());
-		
-		
-		
-		
 		return null;
 	}
 

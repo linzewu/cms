@@ -2,6 +2,7 @@ package com.lzw.work.cms.manager;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 	private TrafficDBManager trafficDBManager;
 	
 	
-	public void updateRegister() {
+	public void updateRegister() { 
 		try {
 			PreCarRegister bcr = (PreCarRegister) bean;
 			StringBuilder sb = new StringBuilder("");
@@ -370,6 +371,69 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 			e.printStackTrace();
 		}
 	}
+	
+	public void getCarInfo2ByCarNumber() {
+		try {
+			TmriJaxRpcOutAccessServiceStub trias = new TmriJaxRpcOutAccessServiceStub();
+			TmriJaxRpcOutAccessServiceStub.QueryObjectOut qo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+
+			String hpzl = request.getParameter("hpzl");
+			String hphm = request.getParameter("hphm");
+			String sf=request.getParameter("sf");
+			System.out.println("sf"+sf);
+			if(sf!=null){
+				sf=URLEncoder.encode(sf, "UTF-8");
+				
+			}
+			System.out.println("sf"+sf);
+			
+			
+
+			if (hpzl == null || "".equals(hpzl.trim()) || hphm == null
+					|| "".equals(hphm.trim())) {
+				return;
+			}
+
+			qo.setJkid("01C49");
+			qo.setJkxlh("7F1C0909010517040815E3FF83F5F3E28BCC8F9B818DE7EA88DFD19EB8C7D894B9B9BCE0BFD8D6D0D0C4A3A8D0C5CFA2BCE0B9DCCFB5CDB3A3A9");
+			qo.setUTF8XmlDoc("<root><QueryCondition><hphm>" + hphm
+					+ "</hphm><hpzl>" + hpzl
+					+ "</hpzl><sf>"+sf+"</sf></QueryCondition></root>");
+			qo.setXtlb("01");
+
+			String returnXML = trias.queryObjectOut(qo)
+					.getQueryObjectOutReturn();
+			String xml = URLCodeUtil.urlDecode(returnXML);
+			Document doc = DocumentHelper.parseText(xml);
+			Element root = doc.getRootElement();
+			System.out.println(root.asXML());
+			Element dataElecmet = root.element("body").element("veh");
+
+			if (dataElecmet != null) {
+				Map<String, String> dataMap = new HashMap<String, String>();
+				for (Object o : dataElecmet.elements()) {
+					Element element = (Element) o;
+					String key = element.getName();
+					String value = element.getText();
+					
+					dataMap.put(key, CommonUtil.convertCode(key,value));
+				}
+				String clxh= (String)dataMap.get("clxh");
+				if(clxh!=null){
+					String ggbh = trafficDBManager.getFirstGGBH(clxh);
+					dataMap.put("ggbh", ggbh);
+				}
+				
+				pw.print(JSONObject.fromObject(dataMap));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public void getSeq(){
 		final String sql="EXEC Sequences  'ycscgs',''";
