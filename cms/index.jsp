@@ -2,5 +2,5 @@
     pageEncoding="UTF-8"%>
 <%
 
-response.sendRedirect("index.action");
+response.sendRedirect("index.action");  
 %>
