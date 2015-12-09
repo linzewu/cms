@@ -252,6 +252,18 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void main(String[] age){
+		PreCarRegisterManager a=new PreCarRegisterManager();
+		
+		String s="测试|";
+		
+		for(int i=0;i<100;i++){
+			s+=s;
+		}
+		
+		a.create2Code("E:\\", s, "tt");
+	}
 
 	public void checkPower() {
 		HttpServletRequest request = ServletActionContext.getRequest();

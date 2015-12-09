@@ -131,7 +131,7 @@ public class InitListener implements ServletContextListener {
 
 	private List getCodeList(Map param) {
 
-		final String sql = "SELECT * FROM TRFF_APP.FRM_CODE WHERE DMLB=:dmlb AND XTLB=:xtlb";
+		final String sql = "SELECT * FROM FRM_CODE WHERE DMLB=:dmlb AND XTLB=:xtlb";
 		return sqlManager.getBaseList(sql, param, null);
 
 	}
