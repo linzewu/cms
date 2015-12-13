@@ -56,14 +56,9 @@ public class InitListener implements ServletContextListener {
 
 			trafficeSessionFactory = (SessionFactory) wac
 					.getBean("trafficeSessionFactory");
-
 			sqlManager = (SQLManagerImpl) wac.getBean("sqlManager");
-
 			initTomcatPath();
-
-			sqlManager.setBaseSessionFactory(trafficeSessionFactory);
 			initCode();
-			sqlManager.setBaseSessionFactory(sessionFactory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

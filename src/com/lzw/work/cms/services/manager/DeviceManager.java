@@ -1,6 +1,5 @@
 package com.lzw.work.cms.services.manager;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.Resource;

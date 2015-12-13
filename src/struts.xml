@@ -20,6 +20,9 @@
 		
 		<action name="device!*" class="deviceAction" method="{1}">
 		</action>
+		
+		<action name="exchange!*" class="exchangeAction" method="{1}">
+		</action>
 	</package>
 
 </struts>

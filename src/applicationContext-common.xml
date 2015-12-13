@@ -22,13 +22,13 @@
 		</property>
 	</bean>
 
-	<bean id="trafficDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+<!-- 	<bean id="trafficDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName">
 			<value>java:comp/env/jdbc/ORCL</value>
 		</property>
 	</bean>
-	
-	<bean id="trafficeSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	 -->
+	<!-- <bean id="trafficeSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource">
 			<ref bean="trafficDataSource"/>
 		</property>
@@ -37,11 +37,11 @@
 		<property name="packagesToScan">
 			<list>
 				<value>com.xxx.tt</value>
-				<!-- <value>com.lzw.work.dwf.entity</value> -->
+				<value>com.lzw.work.dwf.entity</value>
 			</list>
 		</property>
 		
-	</bean>
+	</bean> -->
 	
 
 	

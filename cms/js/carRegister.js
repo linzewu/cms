@@ -10,21 +10,16 @@ function setPring() {
 	LODOP.SELECT_PRINTER();
 }
 
-function getGgbh(value) {
-	if (value != null && $.trim(value) != "") {
-		$.messager.progress({
-			title : '加载公告日期',
-			msg : '数据加载中...'
-		});
-		var param = {};
+var reqCount=0;
 
-		param.mType = "trafficDBManager";
-		param.method = "getGongGaoListbyCLXH";
-		param.clxh = value;
-		$.post("baseManager!!multipleManager.action", param, function(data) {
-			if (data != null && data.length > 0) {
-				$("#ggbh").combobox("loadData", data);
-
+function getDataRes(param){
+	
+	$.post("exchange!queryRes.action", param, function(data){
+		if(data.state==400&&reqCount<=2){
+			setTimeout(function(){getDataRes(param)}, 3000);
+			reqCount++;
+		}else if(data.state==200){
+				$("#ggbh").combobox("loadData", data.data);
 				var index = 0;
 				for (var i = 0; i < data.length; i++) {
 					if (data[i]['CLXH '] == value) {
@@ -32,15 +27,45 @@ function getGgbh(value) {
 						break;
 					}
 				}
-				// $("#ggbh").combobox("select", data[index]['BH']);
-			} else {
-				$("#ggbh").combobox("loadData", []);
-				$("#ggbh").combobox("setValue", '');
-				$("#ggbh").combobox("setText", '');
-			}
 			$.messager.progress('close');
+			reqCount=0;
+		}else{
+			$("#ggbh").combobox("loadData", []);
+			$("#ggbh").combobox("setValue", '');
+			$("#ggbh").combobox("setText", '');
+			$.messager.alert("提示","综合平台无返回信息，请点击公告查询按钮重试！","info");
+			$.messager.progress('close');
+			reqCount=0;
+		}
+	},"json").error(function(){
+		$.messager.progress('close');
+		$.messager.alert("错误","数据查询错误，请检查网络是否正常","error");
+		reqCount=0;
+	});
+}
 
-		}, "json");
+function getGgbh(value) {
+	if (value != null && $.trim(value) != "") {
+		$.messager.progress({
+			title : '加载公告日期',
+			msg : '请求综合平台获取公告信息...'
+		});
+		var param = {};
+		param.clxh = value;
+		$.post("exchange!saveReq.action", param, function(data) {
+			$.messager.progress('close');
+			$.messager.progress({
+				title : '请求已发送，等待综合平台返回数据(5-10秒)',
+				msg : '请等待'
+			});
+			
+			if(data.state==200){
+				setTimeout(function(){getDataRes(param)},3000);
+			}
+		}, "json").error(function(){
+			$.messager.progress('close');
+			$.messager.alert("错误","数据查询错误，请检查网络是否正常","error");
+		});
 	} else {
 		$("#ggbh").combobox("loadData", []);
 		$("#ggbh").combobox("setValue", '');
@@ -141,7 +166,7 @@ function checkFormNumber() {
 
 function checkData(param) {
 	var isValid = $(this).form('validate');
-	if (isValid) {
+/*	if (isValid) {
 		var param = {};
 		param.mType = "preCarRegisterManager";
 		param.method = "checkPower";
@@ -168,7 +193,7 @@ function checkData(param) {
 			$.messager.alert('警告', "该车辆60天内检测不合格，需要授权才能登记", 'info');
 			return false;
 		}
-	}
+	}*/
 	return isValid;
 }
 
@@ -391,6 +416,7 @@ function readQrtext() {
 		return 0;
 	}
 	var barArray = strbarcode.split("|");
+	alert(barArray)
 
 	var strBarCodeType = barArray[0];
 	if (strBarCodeType.split("_")[0] == "ZCCCHGZ") {
@@ -418,7 +444,7 @@ function loadScanInfo(barArray, strbarcode) {
 	dataInfo["ccrq"] = barArray[3];
 
 	dataInfo["zzcmc"] = barArray[4];
-	// dataInfo["cllx"]=barArray[6];
+	//dataInfo["cllx"]=barArray[6];
 
 	var clpps = barArray[7].split("/");
 	if (clpps.length > 1) {

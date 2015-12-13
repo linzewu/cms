@@ -15,7 +15,7 @@
 				<tr>
 					<td class="info_title">公告日期：</td>
 					<td class="info" colspan="3" ><input style="width: 420px;" name="ggbh" id="ggbh" class="easyui-combobox" required="true"
-						data-options="valueField:'BH',textField:'GGRQ',onChange:gongGaoChange,editable:false"/>
+						data-options="valueField:'BH',textField:'GGRQ',onChange:gongGaoChange"/>
 						<a href="#" id="query_info" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:loadGonggao">查看</a>	
 					</td>
 				</tr>
