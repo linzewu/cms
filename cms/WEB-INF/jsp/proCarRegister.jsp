@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/Math.uuid.js"></script>
 <form action="baseManager!!multipleManager.action" id="myform" name="myform" method="post">
 	<div class="info_body">
 		<table border="0" class="base_table" cellpadding="0" cellspacing="0">

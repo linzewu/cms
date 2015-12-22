@@ -2,8 +2,11 @@ package com.lzw.work.cms.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +19,10 @@ import com.lzw.work.dwf.entity.BaseEntity;
 public class PreCarRegister extends BaseEntity {
 	
 	private static final long serialVersionUID = 1L;
+	
+	@Id
+	@Column(name = "C_ID", length = 128)
+	private String id;
 	
 	@Column(name = "HGZBH", length = 64)
 	private String hgzbh;
@@ -595,6 +602,16 @@ public class PreCarRegister extends BaseEntity {
 
 	public void setBz(String bz) {
 		this.bz = bz;
+	}
+
+
+	public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	

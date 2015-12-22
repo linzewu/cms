@@ -8,7 +8,8 @@
 		url:'baseManager!!multipleManager.action?bType=preCarRegister&method=getCarList'"
 		>  
     <thead>
-        <tr>  
+        <tr>
+        	<th data-options="field:'lsh',width:80"  formatter="formatterCllx"  style="width: 180px" >业务流水号</th>
             <th data-options="field:'cllx',width:80"  formatter="formatterCllx"  style="width: 180px" >车辆类型</th>
             <th data-options="field:'clsbdh',width:80" style="width: 180px"  >车辆识别码</th>  
             <th data-options="field:'csys',width:80"  formatter="formatterCsys" style="width: 180px"  >车身颜色</th>
@@ -23,7 +24,7 @@
 	<div style="margin-bottom:5px">
 	   <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" plain="true" onclick="print()">打印查验单</a> 
 	   <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="loadCenter({title:'车辆预登记',action:'baseManager!proCarRegister!toPage.action'})">车辆预登记</a>
-       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="toEdit()">修改预登记信息</a>
+     <!--   <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="toEdit()">修改预登记信息</a> -->
     </div>
     <div style="margin-bottom:5px">
     	车辆识别代号：<input type="text" class="easyui-textbox" id="clsbdh" >

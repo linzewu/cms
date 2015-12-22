@@ -344,3 +344,4 @@ function deleteData(actionType,id) {
 	return $.parseJSON(text);
 }
 
+

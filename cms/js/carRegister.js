@@ -12,27 +12,22 @@ function setPring() {
 
 var reqCount=0;
 
-function getDataRes(param){
+function getDataRes(param,success,error){
 	
 	$.post("exchange!queryRes.action", param, function(data){
 		if(data.state==400&&reqCount<=2){
-			setTimeout(function(){getDataRes(param)}, 3000);
+			setTimeout(function(){getDataRes(param,success,error)}, 3000);
 			reqCount++;
 		}else if(data.state==200){
-				$("#ggbh").combobox("loadData", data.data);
-				var index = 0;
-				for (var i = 0; i < data.length; i++) {
-					if (data[i]['CLXH '] == value) {
-						index = i;
-						break;
-					}
-				}
+			if(success){
+				success.call(success,data.data);
+			}
 			$.messager.progress('close');
 			reqCount=0;
 		}else{
-			$("#ggbh").combobox("loadData", []);
-			$("#ggbh").combobox("setValue", '');
-			$("#ggbh").combobox("setText", '');
+			if(error){
+				error.call();
+			}
 			$.messager.alert("提示","综合平台无返回信息，请点击公告查询按钮重试！","info");
 			$.messager.progress('close');
 			reqCount=0;
@@ -52,15 +47,44 @@ function getGgbh(value) {
 		});
 		var param = {};
 		param.clxh = value;
+		var nowDate=new Date();
+		var hz=nowDate.getFullYear()+""+(nowDate.getMonth()+1)+""+nowDate.getDate();
+		
+		param.reqMethod="cxgglb";
+		param.queryCode=value+"_"+hz; 
+		
+		param.reqParam="{clxh:'"+value+"'}";
+		param.methodType="query";
+		
 		$.post("exchange!saveReq.action", param, function(data) {
 			$.messager.progress('close');
-			$.messager.progress({
-				title : '请求已发送，等待综合平台返回数据(5-10秒)',
-				msg : '请等待'
-			});
-			
 			if(data.state==200){
-				setTimeout(function(){getDataRes(param)},3000);
+				$.messager.progress({
+					title : '请求已发送，等待综合平台返回数据(5-15秒)',
+					msg : '请等待'
+				});
+				
+				setTimeout(function(){
+					var success=function(data){
+						$("#ggbh").combobox("loadData", data);
+						var index = 0;
+						for (var i = 0; i < data.length; i++) {
+							if (data[i]['CLXH '] == value) {
+								index = i;
+								break;
+							}
+						}
+					};
+					var error =function(data){
+						$("#ggbh").combobox("loadData", []);
+						$("#ggbh").combobox("setValue", '');
+						$("#ggbh").combobox("setText", '');
+					}
+					getDataRes(param,success,error);
+					
+				},3000);
+			}else{
+				$.messager.alert("错误","请求发送失败","error");
 			}
 		}, "json").error(function(){
 			$.messager.progress('close');
@@ -72,15 +96,61 @@ function getGgbh(value) {
 		$("#ggbh").combobox("setText", '');
 	}
 }
-
-function save() {
-	$("#isPrint").val("false");
-	$('#myform').submit();
+function saveSuccess(data){
+	var isprint = $("#isPrint").val();
+	if (isprint == "true") {
+		var cydata = {};
+		cydata['ywlx'] = $("#ywlx").combobox("getValue");
+		cydata['hpzl'] = $("#hpzl").combobox("getValue");
+		cydata['id'] = data['sid'];
+		cydata['clsbdh'] = $("#clsbdh").val();
+		cydata['hphm'] = $("#hphm").textbox("getValue");
+		printCYD(cydata);
+	}
+	$.messager.alert('提示', "预录入成功", 'info', function() {
+		$('#myform').form("clear");
+		$("#bType").val("preCarRegister");
+		$("#method").val("saveRegister");
+	});
 }
 
 function saveAndPring() {
 	$("#isPrint").val("true");
-	$('#myform').submit();
+	var flag = $("#myform").form("validate");
+	if(!flag){
+		return ;
+	}
+	var reqData = $("#myform").serializeJson();
+	var param={};
+	param.reqMethod="ylrbc";
+	param.reqParam=JSON.stringify(reqData);
+	param.methodType="save";
+	param.queryCode=Math.uuid();
+	$.messager.progress({
+		title : '车辆预录入',
+		msg : '请求综合平台保存车辆预录入信息，请等待...'
+	});
+	
+	$.post("exchange!saveReq.action", param,function(data){
+		$.messager.progress('close');
+		if(data.state==200){
+			$.messager.progress({
+				title : '请求已发送，等待综合平台返回录入结果(5-15秒)',
+				msg : '请等待'
+			});
+			setTimeout(function(){getDataRes(param,saveSuccess,null)},3000);
+		}else{
+			$.messager.alert("错误","请求发送失败","error");
+		}
+		
+	},"json").error(function(){
+		$.messager.progress('close');
+		$.messager.alert("错误","数据发送错误，请检查网络是否正常","error");
+	});
+	
+	
+	
+	//$('#myform').submit();
 }
 
 function implSaveAndPring() {
@@ -197,65 +267,6 @@ function checkData(param) {
 	return isValid;
 }
 
-// 进口车
-$('#myformImpl').form({
-	success : function(data) {
-		var datajson = $.parseJSON(data);
-		if (datajson['state'] == 200) {
-			var isprint = $("#isPrint").val();
-			if (isprint == "true") {
-				var cydata = {};
-				cydata['ywlx'] = $("#ywlx").combobox("getValue");
-				cydata['hpzl'] = $("#hpzl").combobox("getValue");
-				cydata['id'] = datajson['sid'];
-				cydata['clsbdh'] = $("#clsbdh").val();
-				//cydata['syxz'] = $("#syxz").combobox("getValue");
-				printCYD(cydata);
-			}
-			$.messager.alert('提示', "保存成功", 'info', function() {
-				$('#myform').form("clear");
-				$("#bType").val("preCarRegister");
-				$("#method").val("saveRegister");
-			});
-		} else {
-			$.messager.alert('提示', "保存出错", 'error');
-		}
-	}
-});
-
-// 国产车信息修改
-$('#myformEdit').form({
-	onSubmit : function(param) {
-		var isValid = $(this).form('validate');
-		return isValid;
-	},
-	success : function(data) {
-		var datajson = $.parseJSON(data);
-		if (datajson['state'] == 200) {
-			var isprint = $("#isPrint").val();
-			if (isprint == "true") {
-				var cydata = {};
-				cydata['ywlx'] = $("#ywlx").combobox("getValue");
-				cydata['hpzl'] = $("#hpzl").combobox("getValue");
-				cydata['id'] = datajson['sid'];
-				cydata['clsbdh'] = $("#clsbdh").val();
-				cydata['hphm'] = $("#hphm").textbox("getValue");
-			
-				printCYD(cydata);
-
-
-			}
-			$.messager.alert('提示', "保存成功", 'info', function() {
-				$('#myformEdit').form("clear");
-				$("#bType").val("preCarRegister");
-				$("#method").val("saveRegister");
-			});
-		} else {
-			$.messager.alert('提示', "保存出错", 'error');
-		}
-	}
-});
-
 $('#myform').form({
 	onSubmit : checkData,
 	success : function(data) {
@@ -263,14 +274,12 @@ $('#myform').form({
 		if (datajson['state'] == 200) {
 			var isprint = $("#isPrint").val();
 			if (isprint == "true") {
-
 				var cydata = {};
 				cydata['ywlx'] = $("#ywlx").combobox("getValue");
 				cydata['hpzl'] = $("#hpzl").combobox("getValue");
 				cydata['id'] = datajson['sid'];
 				cydata['clsbdh'] = $("#clsbdh").val();
 				cydata['hphm'] = $("#hphm").textbox("getValue");
-				//cydata['syxz'] = $("#syxz").combobox("getValue");
 				printCYD(cydata);
 
 			}
@@ -416,7 +425,6 @@ function readQrtext() {
 		return 0;
 	}
 	var barArray = strbarcode.split("|");
-	alert(barArray)
 
 	var strBarCodeType = barArray[0];
 	if (strBarCodeType.split("_")[0] == "ZCCCHGZ") {
@@ -698,3 +706,23 @@ $.extend($.fn.validatebox.defaults.rules, {
         message: '请确认该项数据的唯一性！'
     }
 });
+
+(function($){  
+    $.fn.serializeJson=function(){  
+        var serializeObj={};  
+        var array=this.serializeArray();  
+        var str=this.serialize();  
+        $(array).each(function(){  
+            if(serializeObj[this.name]){  
+                if($.isArray(serializeObj[this.name])){  
+                    serializeObj[this.name].push(this.value);  
+                }else{  
+                    serializeObj[this.name]=[serializeObj[this.name],this.value];  
+                }  
+            }else{  
+                serializeObj[this.name]=this.value;   
+            }  
+        });  
+        return serializeObj;  
+    };  
+})(jQuery);

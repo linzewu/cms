@@ -55,9 +55,9 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 	public void setBean(BaseEntity bean) throws Exception {
 		this.bean = bean;
 	}
-	
+/*	
 	@Resource(name="trafficDBManager")
-	private TrafficDBManager trafficDBManager;
+	private TrafficDBManager trafficDBManager;*/
 	
 	
 	public void updateRegister() { 
@@ -332,7 +332,7 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 		pw.print(jo);
 	}
 	
-	public void getCarInfoByCarNumberConvert() {
+/*	public void getCarInfoByCarNumberConvert() {
 		try {
 			TmriJaxRpcOutAccessServiceStub trias = new TmriJaxRpcOutAccessServiceStub();
 			TmriJaxRpcOutAccessServiceStub.QueryObjectOut qo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
@@ -382,9 +382,9 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
-	public void getCarInfo2ByCarNumber() {
+	/*public void getCarInfo2ByCarNumber() {
 		try {
 			TmriJaxRpcOutAccessServiceStub trias = new TmriJaxRpcOutAccessServiceStub();
 			TmriJaxRpcOutAccessServiceStub.QueryObjectOut qo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
@@ -444,7 +444,7 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	
 	public void getSeq(){

@@ -45,18 +45,16 @@ public class LoginManager  extends MultipleManagerAbstract {
 		param.put("userName", userName);
 		
 		List users = this.getBaseList(sql, param, null);
-		
 		if(users.size()>0){
 			rjo.put("state","200");
 			HttpSession session = ServletActionContext.getRequest().getSession();
 			session.setAttribute("user", users.get(0));
-			System.out.println(users.get(0));
+			System.out.println(rjo.toString());
 			pw.print(rjo);
 		}else{
 			rjo.put("state","405");
 			rjo.put("message","用户名密码错误！");
 			pw.print(rjo);
-			return;
 		}
 	}
 	
