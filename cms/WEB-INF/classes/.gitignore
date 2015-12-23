@@ -1,9 +1,0 @@
-/applicationContext-common.xml
-/com/
-/db.properties
-/ehcache.xml
-/ff.xml
-/hibernate.cfg.xml
-/hibernate2.cfg.xml
-/log4j.properties
-/struts.xml
