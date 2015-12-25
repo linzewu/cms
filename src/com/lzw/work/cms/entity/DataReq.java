@@ -1,14 +1,15 @@
 package com.lzw.work.cms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,35 +18,37 @@ import org.springframework.stereotype.Component;
 @Component("dataReq")
 @Entity
 @Table(name = "TM_DataReq")
-public class DataReq {
-	
+public class DataReq implements Serializable {
+
+	/**
+	 * 序列号id
+	 */
+	private static final long serialVersionUID = 3607907633142921278L;
+
 	@Id
-	@GenericGenerator(name = "idGenerator", strategy = "uuid")
-	@GeneratedValue(generator = "idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", length = 128)
-	private String id;
-	
-	@Column(length=128)
+	private Integer id;
+
+	@Column(length = 128)
 	private String reqMethod;
-	
-	//查询码
-	@Column(length=128)
+
+	// 查询码
+	@Column(length = 128)
 	private String queryCode;
-	
+
 	@Column
-	@Type(type="text")
+	@Type(type = "text")
 	private String reqParam;
-	
+
 	@Column
 	private int state;
-	
+
 	@Column
 	private Date createDate;
-	
-	@Column(length=128)
+
+	@Column(length = 128)
 	private String methodType;
-	
-	
 
 	public String getMethodType() {
 		return methodType;
@@ -63,9 +66,6 @@ public class DataReq {
 		this.queryCode = queryCode;
 	}
 
-	public String getId() {
-		return id;
-	}
 
 	public String getReqMethod() {
 		return reqMethod;
@@ -75,7 +75,6 @@ public class DataReq {
 		return reqParam;
 	}
 
-
 	public int getState() {
 		return state;
 	}
@@ -84,9 +83,6 @@ public class DataReq {
 		return createDate;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public void setReqMethod(String reqMethod) {
 		this.reqMethod = reqMethod;
@@ -96,7 +92,6 @@ public class DataReq {
 		this.reqParam = reqParam;
 	}
 
-
 	public void setState(int state) {
 		this.state = state;
 	}
@@ -104,7 +99,14 @@ public class DataReq {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
-	
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	
 }
