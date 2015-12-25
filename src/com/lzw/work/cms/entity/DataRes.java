@@ -5,10 +5,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,10 +20,9 @@ import org.springframework.stereotype.Component;
 public class DataRes {
 
 	@Id
-	@GenericGenerator(name = "idGenerator", strategy = "uuid")
-	@GeneratedValue(generator = "idGenerator")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id", length = 128)
-	private String id;
+	private Integer id;
 	
 	@Column(length=128)
 	private String reqMethod;
@@ -43,9 +42,6 @@ public class DataRes {
 	
 	private String methodType;
 
-	public String getId() {
-		return id;
-	}
 
 	public String getReqMethod() {
 		return reqMethod;
@@ -71,9 +67,6 @@ public class DataRes {
 		return methodType;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public void setReqMethod(String reqMethod) {
 		this.reqMethod = reqMethod;
@@ -97,6 +90,14 @@ public class DataRes {
 
 	public void setMethodType(String methodType) {
 		this.methodType = methodType;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	
 	
