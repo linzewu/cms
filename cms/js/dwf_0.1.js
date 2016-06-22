@@ -19,7 +19,7 @@ function contexDestroy(){
 function menuInit() {
 	var action = $(".dwf-nav1").attr("action");
 	
-	$.post(action,{},function(data) {
+	$.get(action,{},function(data) {
 		var menus = $.parseJSON(data);
 		var ul=$("<ul></ul>");
 		$.each(menus,function(i,n){
@@ -336,6 +336,7 @@ function logout(url){
 }
 
 $(document).ajaxStart(function(even,e){
+	
 $.post('baseManager!!checkLogin.action',function(data){
 if(data=='false'){
 window.location.href='login.jsp'

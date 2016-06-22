@@ -1,5 +1,6 @@
 package com.lzw.work.cms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Component;
 @Component("dataRes")
 @Entity
 @Table(name = "TM_DataRes")
-public class DataRes {
+public class DataRes  implements Serializable{
+	
+	private static final long serialVersionUID = 6134901902533047555L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id", length = 128)
+	@Column(name = "id")
 	private Integer id;
 	
 	@Column(length=128)

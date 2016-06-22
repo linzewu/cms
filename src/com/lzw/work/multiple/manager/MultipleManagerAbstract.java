@@ -32,7 +32,6 @@ public abstract class MultipleManagerAbstract extends BaseManagerImpl {
 		super.setSessionFactory(sessionFactory);
 	}
 	
-	//spring ioc
 	protected WebApplicationContext wac = WebApplicationContextUtils
 			.getWebApplicationContext(ServletActionContext.getServletContext());
 	

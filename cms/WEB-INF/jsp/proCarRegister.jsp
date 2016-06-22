@@ -5,7 +5,7 @@
 	<div class="info_body">
 		<table border="0" class="base_table" cellpadding="0" cellspacing="0">
 			<tbody>
-				<tr>
+			<!-- 	<tr>
 					<td class="info_title">号牌种类：</td>
 					<td class="info"><input name="hpzl" id="hpzl" class="easyui-combobox" required="true"
 							data-options="data:datacode.hpzl,valueField:'value',textField:'label'" /></td>
@@ -13,7 +13,7 @@
 					<td class="info"><input name="hphm" id="hphm" class="easyui-textbox"  />
 						<a href="#" id="query_hphm" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:loadCarInfo">查询</a>
 					</td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td class="info_title">公告日期：</td>
 					<td class="info" colspan="3" ><input style="width: 420px;" name="ggbh" id="ggbh" class="easyui-combobox" required="true"

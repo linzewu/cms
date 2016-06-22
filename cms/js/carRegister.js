@@ -294,7 +294,7 @@ $('#myform').form({
 	}
 });
 
-$.post("a.html", null, function(data) {
+$.get("a.html", null, function(data) {
 	$("#printTemplet").html(data);
 });
 
@@ -319,6 +319,25 @@ function loadCarInfo() {
 	$.messager.progress({
 		title : '加载机动车信息',
 		msg : '数据加载中...'
+	});
+	
+	$.ajax({
+		 type: "POST",
+		 url:"baseManager!!multipleManager.action",
+		 dataType:"json",
+		 data:param,
+		 success: function(data) {
+				if (data != null) {
+					$('#myform').form('load', data);
+				} else {
+					$.messager.alert("提示", "该号牌号码不存在！");
+				}
+				$.messager.progress('close');
+			},
+		 headers: {
+	            "Access-Control-Allow-Origin":"http://example.edu",
+	            "Access-Control-Allow-Headers":"X-Requested-With"
+	        }
 	});
 
 	$.post("baseManager!!multipleManager.action", param, function(data) {
