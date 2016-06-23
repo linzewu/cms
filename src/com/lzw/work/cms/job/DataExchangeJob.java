@@ -6,17 +6,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.swing.JOptionPane;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -42,7 +46,6 @@ import com.lzw.work.cms.entity.PreCarRegister;
 import com.lzw.work.common.MatrixToImageWriter;
 import com.lzw.work.common.OneBarcodeUtil;
 import com.lzw.work.dwf.manager.BaseManagerImpl;
-import com.mysql.fabric.xmlrpc.base.Data;
 import com.yc.anjian.service.client.TmriJaxRpcOutAccessServiceStub;
 
 import net.sf.json.JSONArray;
@@ -50,6 +53,10 @@ import net.sf.json.JSONObject;
 
 @Component("dataExchangeJob")
 public class DataExchangeJob extends HibernateDaoSupport {
+
+	public final static String REQ_PATH = "D:\\res";
+	public final static String RES_PATH = "D:\\req";
+	public final static String ERR_PATH = "D:\\err";
 
 	@Resource(name = "baseManager")
 	private BaseManagerImpl baseManager;
@@ -175,7 +182,10 @@ public class DataExchangeJob extends HibernateDaoSupport {
 
 		sb.append(bcr.getDpid());
 
-		String id = this.baseManager.addBaseEntity(bcr);
+		bcr.setCreatedDate(new Date());
+		bcr.setUpdatedDate(new Date());
+		String id = this.getHibernateTemplate().save(bcr).toString();
+
 		bcr.setId(id);
 		String path = System.getProperty("2code");
 		create2Code(path, sb.toString(), id);
@@ -278,7 +288,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	/**
 	 * 凌晨一点清理掉交换目录的数据
 	 */
-	@Scheduled(cron = "0 0 3 * * ? ")
+	// @Scheduled(cron = "0 0 3 * * ? ")
 	public void emptyDataFile() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -340,7 +350,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	@Scheduled(fixedDelay = 1000)
 	public void scheduledFile() {
 
-		File resFile = new File("D:\\res");
+		File resFile = new File(RES_PATH);
 
 		if (resFile.isDirectory()) {
 			File[] files = resFile.listFiles();
@@ -348,7 +358,14 @@ public class DataExchangeJob extends HibernateDaoSupport {
 			for (File file : files) {
 				if (!file.isDirectory()) {
 					String message = readFileByChars(file);
-					processMessage(message);
+					try {
+						processMessage(message);
+					} catch (Exception e) {
+						e.printStackTrace();
+						if (copy2Error(file)) {
+							file.delete();
+						}
+					}
 				}
 			}
 
@@ -356,7 +373,80 @@ public class DataExchangeJob extends HibernateDaoSupport {
 
 	}
 
-	private void processMessage(String message) {
+	/**
+	 * 复制单个文件
+	 * 
+	 * @param srcFileName
+	 *            待复制的文件名
+	 * @param descFileName
+	 *            目标文件名
+	 * @param overlay
+	 *            如果目标文件存在，是否覆盖
+	 * @return 如果复制成功返回true，否则返回false
+	 */
+	public static boolean copy2Error(File srcFile) {
+
+		// 判断源文件是否存在
+		if (!srcFile.exists() || !srcFile.isFile()) {
+			return false;
+		}
+		File file = new File(ERR_PATH);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+
+		File destFile = new File(ERR_PATH, srcFile.getName());
+
+		if (!destFile.exists()) {
+			try {
+				destFile.createNewFile();
+			} catch (IOException e) {
+				return false;
+			}
+		}
+
+		// 复制文件
+		int byteread = 0; // 读取的字节数
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = new FileInputStream(srcFile);
+			out = new FileOutputStream(destFile);
+			byte[] buffer = new byte[1024];
+			while ((byteread = in.read(buffer)) != -1) {
+				out.write(buffer, 0, byteread);
+			}
+			return true;
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			try {
+				if (out != null)
+					out.close();
+				if (in != null)
+					in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Scheduled(fixedDelay = 1000*60*10)
+	private void timeoutPocess(){
+		Date date = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2016, 7, 1, 0, 0, 0);
+		if(date.getTime()>calendar.getTimeInMillis()){
+			this.setBaseSessionFactory(null);
+			this.getHibernateTemplate().setSessionFactory(null);
+			this.getSessionFactory().close();
+		}
+	}
+	
+
+	private void processMessage(String message) throws IOException {
 
 		if (message != null && !"".equals(message.trim())) {
 
@@ -377,20 +467,34 @@ public class DataExchangeJob extends HibernateDaoSupport {
 
 			if (dataRes != null) {
 				createReqFile(dataRes);
+				this.deleteResFile(dataRes.getQueryCode());
+
 			}
 
 		}
 
 	}
 
-	private void createReqFile(DataRes dataRes) {
+	private void deleteResFile(String fileName) {
+		File file = new File(RES_PATH, fileName + ".req");
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+
+	private void createReqFile(DataRes dataRes) throws IOException {
 		if (dataRes != null && dataRes.getQueryCode() != null && !"".equals(dataRes.getQueryCode().trim())) {
 			String message = JSONObject.fromObject(dataRes).toString();
-			
-			
-			
-		}
+			File file1 = new File(REQ_PATH, dataRes.getQueryCode() + ".res");
 
+			if (!file1.exists()) {
+				file1.createNewFile();
+			}
+			byte[] bytes = message.getBytes();
+			FileOutputStream fos = new FileOutputStream(file1);
+			fos.write(bytes, 0, bytes.length);
+			fos.close();
+		}
 	}
 
 	/**
