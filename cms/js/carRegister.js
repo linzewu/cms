@@ -43,7 +43,7 @@ function getGgbh(value) {
 	if (value != null && $.trim(value) != "") {
 		$.messager.progress({
 			title : '加载公告日期',
-			msg : '请求综合平台获取公告信息...'
+			msg : '加载公告 请等待(5-15秒)...'
 		});
 		var param = {};
 		param.clxh = value;
@@ -59,32 +59,19 @@ function getGgbh(value) {
 		$.post("exchange!saveReq.action", param, function(data) {
 			$.messager.progress('close');
 			if(data.state==200){
-				$.messager.progress({
-					title : '请求已发送，等待综合平台返回数据(5-15秒)',
-					msg : '请等待'
-				});
-				
-				setTimeout(function(){
-					var success=function(data){
-						$("#ggbh").combobox("loadData", data);
-						var index = 0;
-						for (var i = 0; i < data.length; i++) {
-							if (data[i]['CLXH '] == value) {
-								index = i;
-								break;
-							}
-						}
-					};
-					var error =function(data){
-						$("#ggbh").combobox("loadData", []);
-						$("#ggbh").combobox("setValue", '');
-						$("#ggbh").combobox("setText", '');
+				$("#ggbh").combobox("loadData", data.data);
+				var index = 0;
+				for (var i = 0; i < data.length; i++) {
+					if (data[i]['CLXH'] == value) {
+						index = i;
+						break;
 					}
-					getDataRes(param,success,error);
-					
-				},3000);
+				}
 			}else{
-				$.messager.alert("错误","请求发送失败","error");
+				$("#ggbh").combobox("loadData", []);
+				$("#ggbh").combobox("setValue", '');
+				$("#ggbh").combobox("setText", '');
+				$.messager.alert("错误",data.message,"error");
 			}
 		}, "json").error(function(){
 			$.messager.progress('close');
@@ -128,19 +115,15 @@ function saveAndPring() {
 	param.queryCode=Math.uuid();
 	$.messager.progress({
 		title : '车辆预录入',
-		msg : '请求综合平台保存车辆预录入信息，请等待...'
+		msg : '请求综合平台保存车辆预录入信息，请等待(5-15秒)...'
 	});
 	
 	$.post("exchange!saveReq.action", param,function(data){
 		$.messager.progress('close');
 		if(data.state==200){
-			$.messager.progress({
-				title : '请求已发送，等待综合平台返回录入结果(5-15秒)',
-				msg : '请等待'
-			});
-			setTimeout(function(){getDataRes(param,saveSuccess,null)},3000);
+			saveSuccess(data.data)
 		}else{
-			$.messager.alert("错误","请求发送失败","error");
+			$.messager.alert("错误",data.message,"error");
 		}
 		
 	},"json").error(function(){
@@ -149,8 +132,6 @@ function saveAndPring() {
 	});
 	
 	
-	
-	//$('#myform').submit();
 }
 
 function implSaveAndPring() {

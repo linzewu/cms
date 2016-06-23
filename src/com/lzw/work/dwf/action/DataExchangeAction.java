@@ -44,8 +44,11 @@ import net.sf.json.JSONObject;
 @Scope("prototype")
 @Controller("exchangeAction")
 public class DataExchangeAction implements ModelDriven<Object> {
+	
+	public final static String REQ_PATH="D:\\datatopolice\\SendToPolice";
+	
+	public final static String RES_PATH="D:\\datatopolice\\ReceiveFromPolice";
 
-	private static final String File = null;
 
 	protected static Log log = LogFactory.getLog(DataExchangeAction.class);
 
@@ -92,31 +95,18 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			}
 			count++;
 		}
-
 		if (resFile == null) {
 			respondData.put("state", "500");
 			respondData.put("message", "数据交换超时，请稍后再试！");
 			pw.print(respondData);
 		} else {
-
 			PreCarRegister preCarRegister = getPreCarRegister(resFile);
-
 			this.dataExchangeManager.register(preCarRegister);
-
 			createCode(preCarRegister);
-			respondData.put("state", "200");
+			respondData.put("state", 200);
+			respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
 			pw.print(respondData);
 		}
-
-		// DataReq req =
-		// this.dataExchangeManager.queryReqByCode(dataReq.getReqMethod(),
-		// dataReq.getQueryCode());
-		// if("save".equals(dataReq.getMethodType())||req==null){
-		// dataReq.setState(0);
-		// dataReq.setCreateDate(new Date());
-		// this.dataExchangeManager.saveDataReq(dataReq);
-		// req=dataReq;
-		// }
 
 	}
 
@@ -130,7 +120,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 
 	private File getFile(String queryCode) {
 
-		File file = new File("D:\\Res", queryCode + ".res");
+		File file = new File(RES_PATH, queryCode + ".res");
 
 		if (file.exists()) {
 			return file;
@@ -248,7 +238,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 
 	public void createFile(DataReq dataReq) throws IOException {
 		String message = JSONObject.fromObject(dataReq).toString();
-		File file1 = new File("D:\\Req", dataReq.getQueryCode() + ".raq");
+		File file1 = new File(REQ_PATH, dataReq.getQueryCode() + ".raq");
 		if (!file1.exists()) {
 			file1.createNewFile();
 		}
