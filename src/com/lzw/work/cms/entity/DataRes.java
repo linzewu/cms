@@ -20,6 +20,10 @@ import org.springframework.stereotype.Component;
 @Table(name = "TM_DataRes")
 public class DataRes implements Serializable {
 	
+	public final static Integer SUCCESS = 0;
+	
+	public final static Integer ERROR = 1;
+	
 	/**
 	 * 序列id
 	 */

@@ -2,10 +2,13 @@ package com.lzw.work.cms.job;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +42,7 @@ import com.lzw.work.cms.entity.PreCarRegister;
 import com.lzw.work.common.MatrixToImageWriter;
 import com.lzw.work.common.OneBarcodeUtil;
 import com.lzw.work.dwf.manager.BaseManagerImpl;
+import com.mysql.fabric.xmlrpc.base.Data;
 import com.yc.anjian.service.client.TmriJaxRpcOutAccessServiceStub;
 
 import net.sf.json.JSONArray;
@@ -58,76 +62,62 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	@Resource(name = "trffappDBManagerJob")
 	private TrffappDBManagerJob trffappDBManagerJob;
 
-	@Scheduled(fixedDelay = 1000)
-	public void scanGG() throws FileNotFoundException, IOException {
-
-		List<DataReq> datas = getDataReqList("query", "cxgglb", 0);
-
-		for (DataReq req : datas) {
-
-			String param = req.getReqParam();
-
-			if (param == null || "".equals(param)) {
-				return;
-			}
-
-			JSONObject paramMap = JSONObject.fromObject(param);
-
-			String clxh = (String) paramMap.get("clxh");
-
-			if (clxh == null || "".equals(clxh)) {
-				return;
-			}
-
-			List dataList = trffappDBManagerJob.getGongGaoListbyCLXH(clxh);
-			String resContext = JSONArray.fromObject(dataList).toString();
-			DataRes dataRes = new DataRes();
-
+	public DataRes processGG(DataReq req) {
+		String param = req.getReqParam();
+		DataRes dataRes = new DataRes();
+		if (param == null || "".equals(param)) {
 			dataRes.setReqMethod(req.getReqMethod());
 			dataRes.setMethodType(req.getMethodType());
 			dataRes.setQueryCode(req.getQueryCode());
-			dataRes.setResContext(resContext);
-			dataRes.setState(0);
-			saveDataRes(dataRes);
-
-			req.setState(1);
-			updateDataReq(req);
-
+			dataRes.setResContext("请求内容不能为空");
+			dataRes.setState(DataRes.ERROR);
+			return dataRes;
 		}
+		JSONObject paramMap = JSONObject.fromObject(param);
+
+		String clxh = (String) paramMap.get("clxh");
+
+		if (clxh == null || "".equals(clxh)) {
+			dataRes.setReqMethod(req.getReqMethod());
+			dataRes.setMethodType(req.getMethodType());
+			dataRes.setQueryCode(req.getQueryCode());
+			dataRes.setResContext("车辆型号不能为空");
+			dataRes.setState(DataRes.ERROR);
+			return dataRes;
+		}
+
+		List dataList = trffappDBManagerJob.getGongGaoListbyCLXH(clxh);
+		String resContext = JSONArray.fromObject(dataList).toString();
+		dataRes.setReqMethod(req.getReqMethod());
+		dataRes.setMethodType(req.getMethodType());
+		dataRes.setQueryCode(req.getQueryCode());
+		dataRes.setResContext(resContext);
+		dataRes.setState(DataRes.SUCCESS);
+		return dataRes;
 	}
 
-	@Scheduled(fixedDelay = 1000)
-	public void scanYLR() throws FileNotFoundException, IOException {
-
-		List<DataReq> datas = getDataReqList("save", "ylrbc", 0);
-
-		for (DataReq req : datas) {
-
-			String param = req.getReqParam();
-
-			if (param == null || "".equals(param)) {
-				return;
-			}
-
-			JSONObject paramMap = JSONObject.fromObject(param);
-
-			PreCarRegister bcr = (PreCarRegister) JSONObject.toBean(paramMap, PreCarRegister.class);
-			saveRegister(bcr);
-
-			DataRes dataRes = new DataRes();
-
+	public DataRes processYLR(DataReq req) {
+		String param = req.getReqParam();
+		DataRes dataRes = new DataRes();
+		if (param == null || "".equals(param)) {
 			dataRes.setReqMethod(req.getReqMethod());
 			dataRes.setMethodType(req.getMethodType());
 			dataRes.setQueryCode(req.getQueryCode());
-			dataRes.setResContext(JSONObject.fromObject(bcr).toString());
-			dataRes.setState(0);
-			saveDataRes(dataRes);
-
-			req.setState(1);
-
-			updateDataReq(req);
-
+			dataRes.setResContext("请求内容不能为空");
+			dataRes.setState(DataRes.ERROR);
+			return dataRes;
 		}
+		JSONObject paramMap = JSONObject.fromObject(param);
+		PreCarRegister bcr = (PreCarRegister) JSONObject.toBean(paramMap, PreCarRegister.class);
+		saveRegister(bcr);
+
+		dataRes.setReqMethod(req.getReqMethod());
+		dataRes.setMethodType(req.getMethodType());
+		dataRes.setQueryCode(req.getQueryCode());
+		dataRes.setResContext(JSONObject.fromObject(bcr).toString());
+		dataRes.setState(DataRes.SUCCESS);
+		return dataRes;
+
 	}
 
 	private List<DataReq> getDataReqList(String methodType, String reqMethod, int state) {
@@ -299,7 +289,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 		tomcatPath = tomcatPath.substring(0, tomcatPath.indexOf("/webapps"));
 
 		String dataResPath = tomcatPath + "/DataRes/";
-		
+
 		delAllFile(dataResPath);
 
 	}
@@ -345,6 +335,99 @@ public class DataExchangeJob extends HibernateDaoSupport {
 			}
 		}
 		return flag;
+	}
+
+	@Scheduled(fixedDelay = 1000)
+	public void scheduledFile() {
+
+		File resFile = new File("D:\\res");
+
+		if (resFile.isDirectory()) {
+			File[] files = resFile.listFiles();
+
+			for (File file : files) {
+				if (!file.isDirectory()) {
+					String message = readFileByChars(file);
+					processMessage(message);
+				}
+			}
+
+		}
+
+	}
+
+	private void processMessage(String message) {
+
+		if (message != null && !"".equals(message.trim())) {
+
+			JSONObject jo = JSONObject.fromObject(message);
+
+			DataReq dataReq = (DataReq) JSONObject.toBean(jo, DataReq.class);
+
+			DataRes dataRes = null;
+
+			// 车辆预录入
+			if (dataReq.getReqMethod().equals("ylrbc")) {
+				dataRes = this.processYLR(dataReq);
+			}
+			// 车辆公共
+			if (dataReq.getReqMethod().equals("cxgglb")) {
+				dataRes = this.processGG(dataReq);
+			}
+
+			if (dataRes != null) {
+				createReqFile(dataRes);
+			}
+
+		}
+
+	}
+
+	private void createReqFile(DataRes dataRes) {
+		if (dataRes != null && dataRes.getQueryCode() != null && !"".equals(dataRes.getQueryCode().trim())) {
+			String message = JSONObject.fromObject(dataRes).toString();
+			
+			
+			
+		}
+
+	}
+
+	/**
+	 * 以字符为单位读取文件，常用于读文本，数字等类型的文件
+	 */
+	public static String readFileByChars(File file) {
+		Reader reader = null;
+		StringBuffer sb = new StringBuffer();
+		try {
+			char[] tempchars = new char[30];
+			int charread = 0;
+			reader = new InputStreamReader(new FileInputStream(file));
+			while ((charread = reader.read(tempchars)) != -1) {
+				if ((charread == tempchars.length) && (tempchars[tempchars.length - 1] != '\r')) {
+					sb.append(tempchars);
+				} else {
+					for (int i = 0; i < charread; i++) {
+						if (tempchars[i] == '\r') {
+							continue;
+						} else {
+							sb.append(tempchars[i]);
+						}
+					}
+				}
+			}
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e1) {
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 }
