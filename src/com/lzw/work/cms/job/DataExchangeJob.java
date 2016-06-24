@@ -360,8 +360,8 @@ public class DataExchangeJob extends HibernateDaoSupport {
 					String message = readFileByChars(file);
 					try {
 						processMessage(message);
+						file.delete();
 					} catch (Exception e) {
-						e.printStackTrace();
 						if (copy2Error(file)) {
 							file.delete();
 						}
