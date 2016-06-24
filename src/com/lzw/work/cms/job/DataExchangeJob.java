@@ -55,8 +55,8 @@ import net.sf.json.JSONObject;
 public class DataExchangeJob extends HibernateDaoSupport {
 
 	public final static String REQ_PATH = "E:\\datatonet\\SendToNet";
-	public final static String RES_PATH = "E:\\datatonet\\ReceiveFromNet";
-	public final static String ERR_PATH = "E:\\datatonet\\error";
+	public final static String RES_PATH = "E:\\datatonet\\fromnet";
+	public final static String ERR_PATH = "E:\\datatonet\\errfile";
 
 	@Resource(name = "baseManager")
 	private BaseManagerImpl baseManager;
