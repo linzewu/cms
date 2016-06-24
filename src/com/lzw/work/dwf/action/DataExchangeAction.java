@@ -103,13 +103,11 @@ public class DataExchangeAction implements ModelDriven<Object> {
 		} else {
 
 			String message = readFileByChars(resFile);
-
 			JSONObject jo = JSONObject.fromObject(message);
-
-			Integer status = (Integer) jo.get(STATE_KEY);
-
-			if (status == 200) {
-				PreCarRegister preCarRegister = getPreCarRegister(jo);
+			DataRes dataRes  = (DataRes) JSONObject.toBean(jo,DataRes.class);
+			
+			if (dataRes.getState()==DataRes.SUCCESS) {
+				PreCarRegister preCarRegister = getPreCarRegister(dataRes.getResContext());
 				this.dataExchangeManager.register(preCarRegister);
 				createCode(preCarRegister);
 				respondData.put(STATE_KEY, 200);
@@ -117,7 +115,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 				pw.print(respondData);
 			} else {
 				respondData.put(STATE_KEY, 500);
-				respondData.put("message", jo);
+				respondData.put("message", dataRes.getResContext());
 				pw.print(respondData);
 			}
 
@@ -125,7 +123,10 @@ public class DataExchangeAction implements ModelDriven<Object> {
 
 	}
 
-	private PreCarRegister getPreCarRegister(JSONObject jo) {
+	private PreCarRegister getPreCarRegister(String message) {
+		
+		JSONObject jo =JSONObject.fromObject(message);
+		
 		PreCarRegister preCarRegister = (PreCarRegister) JSONObject.toBean(jo, PreCarRegister.class);
 		return preCarRegister;
 	}
