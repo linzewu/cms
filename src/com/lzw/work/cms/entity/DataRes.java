@@ -18,31 +18,38 @@ import org.springframework.stereotype.Component;
 @Component("dataRes")
 @Entity
 @Table(name = "TM_DataRes")
-public class DataRes  implements Serializable{
+public class DataRes implements Serializable {
 	
+	public final static Integer SUCCESS = 0;
+	
+	public final static Integer ERROR = 1;
+	
+	/**
+	 * 序列id
+	 */
 	private static final long serialVersionUID = 6134901902533047555L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", length = 128)
 	private Integer id;
-	
-	@Column(length=128)
+
+	@Column(length = 128)
 	private String reqMethod;
-	
-	@Column(length=128)
+
+	@Column(length = 128)
 	private String queryCode;
-	
+
 	@Column
-	@Type(type="text")
+	@Type(type = "text")
 	private String resContext;
-	
+
 	@Column
 	private int state;
-	
+
 	@Column
 	private Date createDate;
-	
+
 	private String methodType;
 
 
@@ -102,6 +109,7 @@ public class DataRes  implements Serializable{
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 	
 	
 }

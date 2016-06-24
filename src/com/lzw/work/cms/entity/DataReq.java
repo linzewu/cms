@@ -18,36 +18,37 @@ import org.springframework.stereotype.Component;
 @Component("dataReq")
 @Entity
 @Table(name = "TM_DataReq")
-public class DataReq implements Serializable{
-	
+public class DataReq implements Serializable {
+
+	/**
+	 * 序列号id
+	 */
 	private static final long serialVersionUID = 3607907633142921278L;
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", length = 128)
 	private Integer id;
-	
-	@Column(length=128)
+
+	@Column(length = 128)
 	private String reqMethod;
-	
-	//查询码
-	@Column(length=128)
+
+	// 查询码
+	@Column(length = 128)
 	private String queryCode;
-	
+
 	@Column
-	@Type(type="text")
+	@Type(type = "text")
 	private String reqParam;
-	
+
 	@Column
 	private int state;
-	
+
 	@Column
 	private Date createDate;
-	
-	@Column(length=128)
+
+	@Column(length = 128)
 	private String methodType;
-	
-	
 
 	public String getMethodType() {
 		return methodType;
@@ -74,7 +75,6 @@ public class DataReq implements Serializable{
 		return reqParam;
 	}
 
-
 	public int getState() {
 		return state;
 	}
@@ -92,7 +92,6 @@ public class DataReq implements Serializable{
 		this.reqParam = reqParam;
 	}
 
-
 	public void setState(int state) {
 		this.state = state;
 	}
@@ -108,7 +107,6 @@ public class DataReq implements Serializable{
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
-	
 
+	
 }
