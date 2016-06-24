@@ -44,11 +44,12 @@ import net.sf.json.JSONObject;
 @Scope("prototype")
 @Controller("exchangeAction")
 public class DataExchangeAction implements ModelDriven<Object> {
-	
-	public final static String REQ_PATH="D:\\datatopolice\\SendToPolice";
-	
-	public final static String RES_PATH="D:\\datatopolice\\ReceiveFromPolice";
 
+	public final static String REQ_PATH = "D:\\datatopolice\\SendToPolice";
+
+	public final static String RES_PATH = "D:\\datatopolice\\ReceiveFromPolice";
+
+	private final static String STATE_KEY = "state";
 
 	protected static Log log = LogFactory.getLog(DataExchangeAction.class);
 
@@ -96,25 +97,36 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			count++;
 		}
 		if (resFile == null) {
-			respondData.put("state", "500");
+			respondData.put(STATE_KEY, "500");
 			respondData.put("message", "数据交换超时，请稍后再试！");
 			pw.print(respondData);
 		} else {
-			PreCarRegister preCarRegister = getPreCarRegister(resFile);
-			this.dataExchangeManager.register(preCarRegister);
-			createCode(preCarRegister);
-			respondData.put("state", 200);
-			respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
-			pw.print(respondData);
+
+			String message = readFileByChars(resFile);
+
+			JSONObject jo = JSONObject.fromObject(message);
+
+			Integer status = (Integer) jo.get(STATE_KEY);
+
+			if (status == 200) {
+				PreCarRegister preCarRegister = getPreCarRegister(jo);
+				this.dataExchangeManager.register(preCarRegister);
+				createCode(preCarRegister);
+				respondData.put(STATE_KEY, 200);
+				respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
+				pw.print(respondData);
+			} else {
+				respondData.put(STATE_KEY, 500);
+				respondData.put("message", jo);
+				pw.print(respondData);
+			}
+
 		}
 
 	}
 
-	private PreCarRegister getPreCarRegister(File resFile) {
-		String message = readFileByChars(resFile);
-
-		PreCarRegister preCarRegister = (PreCarRegister) JSONObject.toBean(JSONObject.fromObject(message),
-				PreCarRegister.class);
+	private PreCarRegister getPreCarRegister(JSONObject jo) {
+		PreCarRegister preCarRegister = (PreCarRegister) JSONObject.toBean(jo, PreCarRegister.class);
 		return preCarRegister;
 	}
 
@@ -133,7 +145,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 	public void queryRes() {
 		DataRes res = this.dataExchangeManager.queryResByCode(dataReq.getMethodType(), dataReq.getQueryCode());
 		if (res == null) {
-			respondData.put("state", "400");
+			respondData.put(STATE_KEY, "400");
 			pw.print(respondData);
 			return;
 		}
@@ -149,7 +161,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			}
 		}
 
-		respondData.put("state", "200");
+		respondData.put(STATE_KEY, "200");
 		respondData.put("data", res);
 		pw.print(respondData);
 	}
