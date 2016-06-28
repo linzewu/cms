@@ -26,7 +26,7 @@ public class TrffappDBManagerJob extends HibernateDaoSupport {
 
 			@Override
 			public List doInHibernate(Session session) throws HibernateException {
-				String sql = "SELECT PSV.BH,PSV.CLXH,TO_CHAR(PSV.GGRQ,'YYYY-MM-DD') ||' '|| PSV.CLXH  as GGRQ  FROM trff_app.PCB_ST_VEHICLE PSV"
+				String sql = "SELECT PSV.*,TO_CHAR(PSV.GGRQ,'YYYY-MM-DD') ||' '|| PSV.CLXH  as GGRQ_NEW  FROM trff_app.PCB_ST_VEHICLE PSV"
 						+ " WHERE PSV.CLXH LIKE :clxh order by PSV.GGRQ desc";
 
 				return session.createSQLQuery(sql).setParameter("clxh", clxh)

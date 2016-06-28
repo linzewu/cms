@@ -96,6 +96,8 @@ public class DataExchangeJob extends HibernateDaoSupport {
 		}
 
 		List dataList = trffappDBManagerJob.getGongGaoListbyCLXH(clxh);
+		
+		
 		String resContext = JSONArray.fromObject(dataList).toString();
 		dataRes.setReqMethod(req.getReqMethod());
 		dataRes.setMethodType(req.getMethodType());
