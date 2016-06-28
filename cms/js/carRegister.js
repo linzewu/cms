@@ -338,7 +338,20 @@ function gongGaoChange(value) {
 		if(data){
 			$.each(data,function(i,n){
 				if(n.BH==value){
-					$("#gonggaoForm").load(n);
+					
+					var info={};
+					$.each(n,function(j,k){
+						info[j.toLowerCase()]=k;
+					});
+					$("#gonggaoForm").form("load",info);
+					$(".readField").each(function(i,n){
+						var value = info[$(n).attr("name")];
+						$(n).html(value);
+					});
+					dateTimeFormater(info);
+					dataFormater();
+					$("#cllx").combobox("select", info.cllx);
+					
 					return;
 				}
 			});
