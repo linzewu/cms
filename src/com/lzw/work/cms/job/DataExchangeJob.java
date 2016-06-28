@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -57,6 +57,8 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	public final static String REQ_PATH = "E:\\datatonet\\SendToNet";
 	public final static String RES_PATH = "E:\\datatonet\\fromnet";
 	public final static String ERR_PATH = "E:\\datatonet\\errfile";
+	
+	private static Logger logger = Logger.getLogger(DataExchangeJob.class);  
 
 	@Resource(name = "baseManager")
 	private BaseManagerImpl baseManager;
@@ -347,7 +349,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 		return flag;
 	}
 
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelay = 200)
 	public void scheduledFile() {
 
 		File resFile = new File(RES_PATH);
@@ -362,6 +364,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 						processMessage(message);
 						file.delete();
 					} catch (Exception e) {
+						logger.error("处理数据异常",e);
 						if (copy2Error(file)) {
 							file.delete();
 						}
