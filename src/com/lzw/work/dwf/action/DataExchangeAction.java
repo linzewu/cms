@@ -39,6 +39,7 @@ import com.lzw.work.common.MatrixToImageWriter;
 import com.lzw.work.common.OneBarcodeUtil;
 import com.opensymphony.xwork2.ModelDriven;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Scope("prototype")
@@ -91,7 +92,8 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			Thread.sleep(2000);
 			String queryCode = dataReq.getQueryCode();
 			resFile = getFile(queryCode);
-			if (count >= 9) {
+			
+			if (count >= 9||resFile!=null) {
 				break;
 			}
 			count++;
@@ -103,24 +105,34 @@ public class DataExchangeAction implements ModelDriven<Object> {
 		} else {
 
 			String message = readFileByChars(resFile);
+			
+			log.info("message:\t\t"+message);
+			
 			JSONObject jo = JSONObject.fromObject(message);
 			DataRes dataRes  = (DataRes) JSONObject.toBean(jo,DataRes.class);
 			
 			if (dataRes.getState()==DataRes.SUCCESS) {
-				PreCarRegister preCarRegister = getPreCarRegister(dataRes.getResContext());
-				this.dataExchangeManager.register(preCarRegister);
-				createCode(preCarRegister);
-				respondData.put(STATE_KEY, 200);
-				respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
-				pw.print(respondData);
+				if("cxgglb".equals(dataRes.getReqMethod())){
+					respondData.put(STATE_KEY, 200);
+					respondData.put("data", JSONArray.fromObject(dataRes.getResContext()));
+					log.info(respondData);
+					pw.print(respondData);
+				}else if("ylrbc".equals(dataRes.getReqMethod())){
+					PreCarRegister preCarRegister = getPreCarRegister(dataRes.getResContext());
+					this.dataExchangeManager.register(preCarRegister);
+					createCode(preCarRegister);
+					respondData.put(STATE_KEY, 200);
+					respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
+					pw.print(respondData);
+				}
+				
+			
 			} else {
 				respondData.put(STATE_KEY, 500);
 				respondData.put("message", dataRes.getResContext());
 				pw.print(respondData);
 			}
-
 		}
-
 	}
 
 	private PreCarRegister getPreCarRegister(String message) {
@@ -277,14 +289,13 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			while ((charread = reader.read(tempchars)) != -1) {
 				// 同样屏蔽掉\r不显示
 				if ((charread == tempchars.length) && (tempchars[tempchars.length - 1] != '\r')) {
-
 					sb.append(tempchars);
 				} else {
 					for (int i = 0; i < charread; i++) {
 						if (tempchars[i] == '\r') {
 							continue;
 						} else {
-							sb.append(tempchars);
+							sb.append(tempchars[i]);
 						}
 					}
 				}

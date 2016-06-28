@@ -334,13 +334,23 @@ function loadCarInfo() {
 function gongGaoChange(value) {
 	if (value != null && value != "" && value.length == 14) {
 		var param = {};
-		param.mType = "trafficDBManager";
+		var data = $("#ggbh").combobox("getData");
+		if(data){
+			$.each(data,function(i,n){
+				if(n.BH==value){
+					$("#gonggaoForm").load(n);
+					return;
+				}
+			});
+		}
+		
+		/*param.mType = "trafficDBManager";
 		param.method = "getGongGaoInfoByGgbh";
 		param.ggbh = value;
 		loadInfo("baseManager!!multipleManager.action", param, "gonggaoForm",
 				function(data) {
 					$("#cllx").combobox("select", data.cllx);
-				});
+				});*/
 	}
 
 }
