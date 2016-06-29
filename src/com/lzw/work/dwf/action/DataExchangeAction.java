@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -80,7 +81,15 @@ public class DataExchangeAction implements ModelDriven<Object> {
 	public void saveReq() throws IOException, InterruptedException {
 
 		if (dataReq != null) {
+			
+			Map userMap = (Map) ServletActionContext.getRequest().getSession().getAttribute("user");
+			String stationCode = (String) userMap.get("StationCode");
+			String userName = (String) userMap.get("UserName");
 			dataReq.setQueryCode(UUID.randomUUID().toString());
+			
+			dataReq.setCreateUser(userName);
+			dataReq.setStationCode(stationCode);
+			dataReq.setCreateDate(new Date());
 			createFile(dataReq);
 		}
 
@@ -92,8 +101,8 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			Thread.sleep(2000);
 			String queryCode = dataReq.getQueryCode();
 			resFile = getFile(queryCode);
-			
-			if (count >= 9||resFile!=null) {
+
+			if (count >= 9 || resFile != null) {
 				break;
 			}
 			count++;
@@ -105,28 +114,27 @@ public class DataExchangeAction implements ModelDriven<Object> {
 		} else {
 
 			String message = readFileByChars(resFile);
-			
-			log.info("message:\t\t"+message);
-			
 			JSONObject jo = JSONObject.fromObject(message);
-			DataRes dataRes  = (DataRes) JSONObject.toBean(jo,DataRes.class);
-			
-			if (dataRes.getState()==DataRes.SUCCESS) {
-				if("cxgglb".equals(dataRes.getReqMethod())){
+			DataRes dataRes = (DataRes) JSONObject.toBean(jo, DataRes.class);
+
+			if (dataRes.getState() == DataRes.SUCCESS) {
+				if ("cxgglb".equals(dataRes.getReqMethod())) {
 					respondData.put(STATE_KEY, 200);
 					respondData.put("data", JSONArray.fromObject(dataRes.getResContext()));
 					log.info(respondData);
 					pw.print(respondData);
-				}else if("ylrbc".equals(dataRes.getReqMethod())){
+				} else if ("ylrbc".equals(dataRes.getReqMethod())) {
 					PreCarRegister preCarRegister = getPreCarRegister(dataRes.getResContext());
 					this.dataExchangeManager.register(preCarRegister);
 					createCode(preCarRegister);
+
+					log.info("处理完成:\t\t");
+
 					respondData.put(STATE_KEY, 200);
 					respondData.put("data", JSONObject.fromObject(preCarRegister).toString());
 					pw.print(respondData);
 				}
-				
-			
+
 			} else {
 				respondData.put(STATE_KEY, 500);
 				respondData.put("message", dataRes.getResContext());
@@ -136,9 +144,9 @@ public class DataExchangeAction implements ModelDriven<Object> {
 	}
 
 	private PreCarRegister getPreCarRegister(String message) {
-		
-		JSONObject jo =JSONObject.fromObject(message);
-		
+
+		JSONObject jo = JSONObject.fromObject(message);
+
 		PreCarRegister preCarRegister = (PreCarRegister) JSONObject.toBean(jo, PreCarRegister.class);
 		return preCarRegister;
 	}
@@ -173,21 +181,13 @@ public class DataExchangeAction implements ModelDriven<Object> {
 				this.dataExchangeManager.updateRes(res);
 			}
 		}
-
 		respondData.put(STATE_KEY, "200");
 		respondData.put("data", res);
 		pw.print(respondData);
 	}
 
 	private void createCode(PreCarRegister bcr) {
-
-		Map userMap = (Map) ServletActionContext.getRequest().getSession().getAttribute("user");
-		String stationCode = (String) userMap.get("StationCode");
-
-		bcr.setStationCode(stationCode);
-
 		StringBuilder sb = new StringBuilder("");
-
 		sb.append(bcr.getClxh());
 		sb.append("|");
 		sb.append(bcr.getClsbdh());
@@ -218,13 +218,7 @@ public class DataExchangeAction implements ModelDriven<Object> {
 		sb.append("|");
 		sb.append(bcr.getHphm());
 		sb.append("|");
-
-		if (null == bcr.getDpid() || "".equals(bcr.getDpid().trim())) {
-			bcr.setDpid(null);
-		}
-
 		sb.append(bcr.getDpid());
-
 		String path = System.getProperty("2code");
 		create2Code(path, sb.toString(), bcr.getId());
 		if ("A".equals(bcr.getYwlx())) {
@@ -313,6 +307,14 @@ public class DataExchangeAction implements ModelDriven<Object> {
 			}
 		}
 		return sb.toString();
+	}
+
+	public void getCarList() {
+
+	 	Map map = dataExchangeManager.getCarList();
+
+		JSONObject jo = JSONObject.fromObject(map);
+		pw.print(jo);
 	}
 
 }

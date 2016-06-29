@@ -5,7 +5,7 @@
 		singleSelect:true,
 		pagination:true,
 		pageSize:10,
-		url:'baseManager!!multipleManager.action?bType=preCarRegister&method=getCarList'"
+		url:'exchange!getCarList.action'"
 		>  
     <thead>
         <tr>

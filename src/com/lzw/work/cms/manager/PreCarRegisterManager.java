@@ -60,7 +60,7 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 	private TrafficDBManager trafficDBManager;*/
 	
 	
-	public void updateRegister() { 
+/*	public void updateRegister() { 
 		try {
 			PreCarRegister bcr = (PreCarRegister) bean;
 			StringBuilder sb = new StringBuilder("");
@@ -116,11 +116,11 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	
 
-	public void saveRegister() {
+/*	public void saveRegister() {
 		try {
 			PreCarRegister bcr = (PreCarRegister) bean;
 			
@@ -191,7 +191,7 @@ public class PreCarRegisterManager extends MultipleManagerAbstract {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	private String getlsh() {
 		String lsh =null;

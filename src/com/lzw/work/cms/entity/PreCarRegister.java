@@ -1,5 +1,8 @@
 package com.lzw.work.cms.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,20 +13,87 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.lzw.work.dwf.entity.BaseEntity;
-
 @Scope("prototype")
 @Component("preCarRegister")
 @Entity
 @Table(name = "TM_PRE_CAR_REGISTER")
-public class PreCarRegister extends BaseEntity {
+public class PreCarRegister implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
+	@GenericGenerator(name = "idGenerator",  strategy = "assigned")
+	@GeneratedValue(generator = "idGenerator")
 	@Column(name = "C_ID", length = 128)
 	private String id;
+
+	@Column(name = "C_CREATEUSER", length = 64,updatable=false)
+	private String createdUser;
+
+	@Column(name = "C_UPDATEDUSER", length = 64)
+	private String updatedUser;
+
+	@Column(name = "C_CREATEDDATE",updatable=false)
+	private Date createdDate;
+
+	@Column(name = "C_UPDATEDDATE")
+	private Date updatedDate;
+
+	@Column(name = "C_DATASTATE")
+	private int dataState;
 	
+	
+	
+	public String getCreatedUser() {
+		return createdUser;
+	}
+
+
+	public String getUpdatedUser() {
+		return updatedUser;
+	}
+
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+
+	public Date getUpdatedDate() {
+		return updatedDate;
+	}
+
+
+	public int getDataState() {
+		return dataState;
+	}
+
+
+	public void setCreatedUser(String createdUser) {
+		this.createdUser = createdUser;
+	}
+
+
+	public void setUpdatedUser(String updatedUser) {
+		this.updatedUser = updatedUser;
+	}
+
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+
+	public void setUpdatedDate(Date updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+
+	public void setDataState(int dataState) {
+		this.dataState = dataState;
+	}
+
+
 	@Column(name = "HGZBH", length = 64)
 	private String hgzbh;
 	

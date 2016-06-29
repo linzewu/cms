@@ -89,9 +89,10 @@ function saveSuccess(data){
 		var cydata = {};
 		cydata['ywlx'] = $("#ywlx").combobox("getValue");
 		cydata['hpzl'] = $("#hpzl").combobox("getValue");
-		cydata['id'] = data['sid'];
+		cydata['id'] = data['id'];
 		cydata['clsbdh'] = $("#clsbdh").val();
-		cydata['hphm'] = $("#hphm").textbox("getValue");
+		cydata['hphm'] = "";
+		
 		printCYD(cydata);
 	}
 	$.messager.alert('提示', "预录入成功", 'info', function() {
@@ -121,7 +122,7 @@ function saveAndPring() {
 	$.post("exchange!saveReq.action", param,function(data){
 		$.messager.progress('close');
 		if(data.state==200){
-			saveSuccess(data.data)
+			saveSuccess(data.data);
 		}else{
 			$.messager.alert("错误",data.message,"error");
 		}
