@@ -49,6 +49,29 @@ public class DataReq implements Serializable {
 
 	@Column(length = 128)
 	private String methodType;
+	
+	@Column
+	private String createUser;
+	
+	@Column
+	private String stationCode;
+	
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public String getStationCode() {
+		return stationCode;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public void setStationCode(String stationCode) {
+		this.stationCode = stationCode;
+	}
 
 	public String getMethodType() {
 		return methodType;

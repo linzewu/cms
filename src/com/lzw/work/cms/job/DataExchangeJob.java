@@ -120,6 +120,8 @@ public class DataExchangeJob extends HibernateDaoSupport {
 		}
 		JSONObject paramMap = JSONObject.fromObject(param);
 		PreCarRegister bcr = (PreCarRegister) JSONObject.toBean(paramMap, PreCarRegister.class);
+		bcr.setStationCode(req.getStationCode());
+		bcr.setCreatedUser(req.getCreateUser());
 		saveRegister(bcr);
 
 		dataRes.setReqMethod(req.getReqMethod());
