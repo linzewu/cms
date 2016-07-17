@@ -156,6 +156,7 @@ function CheckIsInstall() {
 
 CheckIsInstall();
 
+
 function scan(obj) {
 	var newValue = $(obj).val();
 	var dataArray = newValue.split("|");
@@ -276,7 +277,7 @@ $('#myform').form({
 	}
 });
 
-$.get("a.html", null, function(data) {
+$.get("a.html?dataTime="+new Date().getTime(), null, function(data) {
 	$("#printTemplet").html(data);
 });
 
@@ -675,7 +676,7 @@ function printCYD(data) {
 			function() {
 				var LODOP = getLodop(document.getElementById('LODOP_OB'),
 						document.getElementById('LODOP_EM'));
-				LODOP.ADD_PRINT_HTM(-10, 10, 1024, 1100, document
+				LODOP.ADD_PRINT_HTM(32, 40, 1024, 1100, document
 						.getElementById("printTemplet").innerHTML);
 				LODOP.PREVIEW();
 			});

@@ -218,6 +218,9 @@ public class DataExchangeAction implements ModelDriven<Object> {
 		sb.append("|");
 		sb.append(bcr.getHphm());
 		sb.append("|");
+		if(null==bcr.getDpid()||"".equals(bcr.getDpid().trim())){
+			bcr.setDpid(null);
+		}
 		sb.append(bcr.getDpid());
 		String path = System.getProperty("2code");
 		create2Code(path, sb.toString(), bcr.getId());

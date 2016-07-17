@@ -16,7 +16,7 @@
 				</tr> 
 				<tr>
 					<td class="info_title">公告日期：</td>
-					<td class="info"  ><input style="width: 420px;" name="ggbh" id="ggbh" class="easyui-combobox" required="true"
+					<td class="info"  colspan="3" ><input style="width: 420px;" name="ggbh" id="ggbh" class="easyui-combobox" required="true"
 						data-options="valueField:'BH',textField:'GGRQ_NEW',onChange:gongGaoChange"/>
 						<a href="#" id="query_info" class="easyui-linkbutton" data-options="iconCls:'icon-search',onClick:loadGonggao">查看</a>	
 					</td>
@@ -106,7 +106,7 @@
 			</tbody>
 		</table>
 		<div align="center" class="actionbar">
-			<a href="javascript:saveAndPring()" class="easyui-linkbutton" data-options="iconCls:'icon-print'">保存并打印</a> 
+			<a href="javascript:void()" class="easyui-linkbutton" data-options="iconCls:'icon-print',onClick:saveAndPring">保存并打印</a> 
 			<a href="javascript:loadCenter({title:'预登记列表',action:'baseManager!proCarRegisterList!toPage.action'})" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a>
 		</div>
 	</div>
