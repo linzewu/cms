@@ -32,7 +32,7 @@ import org.jbarcode.encode.Code39Encoder;
 import org.jbarcode.encode.InvalidAtributeException;
 import org.jbarcode.paint.BaseLineTextPainter;
 import org.jbarcode.paint.WideRatioCodedPainter;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +52,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Component("dataExchangeJob")
-public class DataExchangeJob extends HibernateDaoSupport {
+public class DataExchangeJob{
 
 	public final static String REQ_PATH = "E:\\datatonet\\SendToNet";
 	public final static String RES_PATH = "E:\\datatonet\\fromnet";
@@ -62,14 +62,14 @@ public class DataExchangeJob extends HibernateDaoSupport {
 
 	@Resource(name = "baseManager")
 	private BaseManagerImpl baseManager;
-
-	@Resource(name = "sessionFactory")
-	public void setBaseSessionFactory(SessionFactory sessionFactory) {
-		super.setSessionFactory(sessionFactory);
-	}
+	
+	@Resource(name = "hibernateTemplate")
+	private HibernateTemplate hibernateTemplate;
 
 	@Resource(name = "trffappDBManagerJob")
 	private TrffappDBManagerJob trffappDBManagerJob;
+	
+	
 
 	public DataRes processGG(DataReq req) {
 		String param = req.getReqParam();
@@ -134,7 +134,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	}
 
 	private List<DataReq> getDataReqList(String methodType, String reqMethod, int state) {
-		List<DataReq> datas = (List<DataReq>) this.getHibernateTemplate()
+		List<DataReq> datas = (List<DataReq>) hibernateTemplate
 				.find("From DataReq where methodType=? and reqMethod=? and state =? ", methodType, reqMethod, state);
 
 		return datas;
@@ -190,7 +190,7 @@ public class DataExchangeJob extends HibernateDaoSupport {
 
 		bcr.setCreatedDate(new Date());
 		bcr.setUpdatedDate(new Date());
-		String id = this.getHibernateTemplate().save(bcr).toString();
+		String id = hibernateTemplate.save(bcr).toString();
 
 		bcr.setId(id);
 		String path = System.getProperty("2code");
@@ -201,12 +201,12 @@ public class DataExchangeJob extends HibernateDaoSupport {
 	}
 
 	private void saveDataRes(DataRes res) throws FileNotFoundException, IOException {
-		this.getHibernateTemplate().save(res);
+		hibernateTemplate.save(res);
 		dataResSerialize(res);
 	}
 
 	private void updateDataReq(DataReq req) {
-		this.getHibernateTemplate().update(req);
+		hibernateTemplate.update(req);
 	}
 
 	public void create2Code(String path, String content, String fileName) {
@@ -437,18 +437,6 @@ public class DataExchangeJob extends HibernateDaoSupport {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-	
-	@Scheduled(fixedDelay = 1000*60*10)
-	private void timeoutPocess(){
-		Date date = new Date();
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2016, 7, 1, 0, 0, 0);
-		if(date.getTime()>calendar.getTimeInMillis()){
-			this.setBaseSessionFactory(null);
-			this.getHibernateTemplate().setSessionFactory(null);
-			this.getSessionFactory().close();
 		}
 	}
 	

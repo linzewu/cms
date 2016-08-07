@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-		xmlns:task="http://www.springframework.org/schema/task"  
-	 xmlns:context="http://www.springframework.org/schema/context" xmlns:jee="http://www.springframework.org/schema/jee"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="    
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
@@ -13,26 +13,27 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
 
-<bean id="applicationContext"
-	class="org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder" />
-	
+	<bean id="applicationContext"
+		class="org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder" />
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName">
 			<value>java:comp/env/jdbc/anjiannew</value>
 		</property>
 	</bean>
 
+
 	<bean id="trafficDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName">
 			<value>java:comp/env/jdbc/ORCL</value>
 		</property>
 	</bean>
-	
-	<bean id="trafficeSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+
+	<bean id="trafficeSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource">
-			<ref bean="trafficDataSource"/>
+			<ref bean="trafficDataSource" />
 		</property>
-	
+
 		<property name="configLocation" value="classpath:hibernate2.cfg.xml" />
 		<property name="packagesToScan">
 			<list>
@@ -40,14 +41,15 @@
 				<!-- <value>com.lzw.work.dwf.entity</value> -->
 			</list>
 		</property>
-		
-	</bean>
-	
 
-	
+	</bean>
+
+
+
 
 	<!-- 配置sessionFactory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource">
 			<ref bean="dataSource" />
 		</property>
@@ -61,12 +63,15 @@
 		</property>
 	</bean>
 
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
 
-	
 
 	<!-- 配置事务管理器 -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
@@ -80,28 +85,30 @@
 			<tx:method name="remove*" propagation="REQUIRED" />
 			<tx:method name="delete*" propagation="REQUIRED" />
 			<tx:method name="multiple*" propagation="REQUIRED" />
-			
+
 			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
 			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
 			<tx:method name="load*" propagation="REQUIRED" read-only="true" />
 			<tx:method name="scheduledFile" propagation="REQUIRED" />
-			
+
 			<tx:method name="*" propagation="REQUIRED" read-only="true" />
 		</tx:attributes>
 	</tx:advice>
 
 	<!-- 那些类的哪些方法参与事务 -->
 	<aop:config>
-		<aop:pointcut id="allManagerMethod" expression="execution(* com.lzw.work.cms.job.*.*(..)) || execution(* com.lzw.work.dwf.action.*.*(..)) || execution(* com.lzw.work.cms.services.manager.*.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" /> 
+		<aop:pointcut id="allManagerMethod"
+			expression="execution(* com.lzw.work.cms.job.*.*(..)) || execution(* com.lzw.work.dwf.action.*.*(..)) || execution(* com.lzw.work.cms.services.manager.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" />
 	</aop:config>
 
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<!-- 自动加载构建bean -->
 	<context:component-scan base-package="com.lzw.work" />
-	
-	<task:annotation-driven scheduler="qbScheduler" mode="proxy"/>  
-    <task:scheduler id="qbScheduler" pool-size="25"/>  
+
+	<task:annotation-driven scheduler="qbScheduler"
+		mode="proxy" />
+	<task:scheduler id="qbScheduler" pool-size="25" />
 
 </beans>
