@@ -1,7 +1,8 @@
+/applicationContext-common.xml
 /db.properties
 /ehcache.xml
 /ff.xml
 /hibernate.cfg.xml
 /hibernate2.cfg.xml
 /log4j.properties
-/com/
+/struts.xml
