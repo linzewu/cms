@@ -173,6 +173,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>${org.hibernate-version}</version>
+		</dependency>
+
 		<!--enable hibernate to use its proxy model -->
 
 		<!-- axis2 -->
@@ -221,6 +227,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-spring</artifactId>
+			<version>${org.apache.axis2}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-xml-provider</artifactId>
 			<version>2.4.1</version>
@@ -262,13 +274,23 @@
 			<artifactId>core</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		
-		<dependency>
-    <groupId>org.apache.struts</groupId>
-    <artifactId>struts2-core</artifactId>
-    <version>2.5.2</version>
-</dependency>
 
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+			<version>2.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.10.2.2.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jbarcode</groupId>
+			<artifactId>jbarcode</artifactId>
+			<version>0.28</version>
+		</dependency>
 	</dependencies>
 
 </project>

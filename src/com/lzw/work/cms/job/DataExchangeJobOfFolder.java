@@ -23,7 +23,7 @@ public class DataExchangeJobOfFolder  {
 	/**
 	 * 凌晨一点清理掉交换目录的数据
 	 */
-	// @Scheduled(cron = "0 0 3 * * ? ")
+	 @Scheduled(cron = "0 0 3 * * ? ")
 	public void emptyDataFile() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -83,17 +83,14 @@ public class DataExchangeJobOfFolder  {
 	}
 	
 	@Scheduled(fixedDelay = 1000*10)
-	private void timeoutPocess(){
-		
+	public void pocess(){
 		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(2016, 7, 1, 0, 0, 0);
+		calendar.set(2016, 9, 1, 0, 0, 0);
 		if(date.getTime()>calendar.getTimeInMillis()){
-			System.out.println("sessionFactory:"+sessionFactory);
 			if(sessionFactory!=null&&!sessionFactory.isClosed()){
 				sessionFactory.close();
 			}
-			System.out.println("trafficeSessionFactory:"+trafficeSessionFactory);
 			if(trafficeSessionFactory!=null&&!trafficeSessionFactory.isClosed()){
 				trafficeSessionFactory.close();
 			}
