@@ -82,7 +82,7 @@ public class DataExchangeJobOfFolder  {
 		return flag;
 	}
 	
-	@Scheduled(fixedDelay = 1000*10)
+//	@Scheduled(fixedDelay = 1000*10)
 	public void pocess(){
 		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();

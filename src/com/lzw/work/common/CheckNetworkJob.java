@@ -18,7 +18,7 @@ public class CheckNetworkJob {
 	
 	private static Logger logger = Logger.getLogger(CheckNetworkJob.class);
 	
-	@Scheduled(fixedDelay = 5000)
+	//@Scheduled(fixedDelay = 5000)
 	public void checkNetWork(){
 		FileInputStream fileInputStream=null;
 		FileOutputStream fos =null;

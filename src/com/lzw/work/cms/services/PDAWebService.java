@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContextAware;
 
 public class PDAWebService implements ServiceObjectSupplier,
         ApplicationContextAware {
+	
     private static ApplicationContext ctx;
 
     public Object getServiceObject(AxisService axisService) throws AxisFault {
@@ -20,6 +21,7 @@ public class PDAWebService implements ServiceObjectSupplier,
                 throw new AxisFault("applicationContext is NULL! ");
             if (ctx.getBean(beanName) == null)
                 throw new AxisFault("Axis2 Can't find Spring Bean: " + beanName);
+            
             return ctx.getBean(beanName);
         } else {
             throw new AxisFault(Messages.getMessage("paramIsNotSpecified",

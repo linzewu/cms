@@ -5,7 +5,7 @@
 	<artifactId>cms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-
+ 
 	<properties>
 		<org.springframework-version>4.1.6.RELEASE</org.springframework-version>
 		<org.hibernate-version>4.3.1.Final</org.hibernate-version>
@@ -42,7 +42,7 @@
 			</plugin>
 		</plugins>
 	</build>
-
+ 
 
 	<dependencies>
 		<dependency>
@@ -172,13 +172,13 @@
 			<version>1.0.0.GA</version>
 			<scope>provided</scope>
 		</dependency>
-
+	<!-- 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>${org.hibernate-version}</version>
 		</dependency>
-
+ -->
 		<!--enable hibernate to use its proxy model -->
 
 		<!-- axis2 -->

@@ -2,7 +2,7 @@
 <service name="pdaServices">
     <description>pdaServices</description>
     <parameter name="ServiceObjectSupplier">
-        org.apache.axis2.extensions.spring.receivers.SpringAppContextAwareObjectSupplier
+        org.apache.axis2.extensions.spring.receivers.SpringServletContextObjectSupplier
     </parameter>
     <!-- 
        SpringBeanName固定的不能改

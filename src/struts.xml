@@ -17,7 +17,6 @@
 		<action name="index" >
 			<result>WEB-INF/jsp/index.jsp</result>
 		</action>
-		
 		<action name="device!*" class="deviceAction" method="{1}">
 		</action>
 	</package>
