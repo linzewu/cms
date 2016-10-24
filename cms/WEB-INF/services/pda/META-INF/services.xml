@@ -5,6 +5,7 @@
         org.apache.axis2.extensions.spring.receivers.SpringServletContextObjectSupplier
     </parameter>
     <!-- 
+    	测试
        SpringBeanName固定的不能改
        helloWorld是spring中注册的实现类得id
      -->
