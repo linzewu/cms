@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -44,7 +46,7 @@ import com.lzw.work.cms.entity.PreCarRegister;
 import com.lzw.work.common.MatrixToImageWriter;
 import com.lzw.work.common.OneBarcodeUtil;
 import com.lzw.work.dwf.manager.BaseManagerImpl;
-import com.yc.anjian.service.client.TmriJaxRpcOutAccessServiceStub;
+import com.yc.anjian.newservice.client.TmriJaxRpcOutNewAccessServiceStub;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -66,6 +68,41 @@ public class DataExchangeJob{
 
 	@Resource(name = "trffappDBManagerJob")
 	private TrffappDBManagerJob trffappDBManagerJob;
+	
+	private void setQueryObjectOut(TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qo){
+		
+		if(ServletActionContext.getRequest()!=null){
+			Map userMap = (Map)ServletActionContext.getRequest().getSession().getAttribute("user");
+			String ip = getRemoteHost(ServletActionContext.getRequest());
+			String stationCode = (String)userMap.get("StationCode");
+			String idcard = (String)userMap.get("IDCard");
+			String realName =(String)userMap.get("RealName");
+			qo.setYhbz(idcard);
+			qo.setYhxm(realName);
+			qo.setZdbs(ip);
+		}else{
+			qo.setYhbz("");
+			qo.setYhxm("");
+			qo.setZdbs("10.39.147.6");
+		}
+		qo.setDwjgdm("");
+		qo.setDwmc("");
+		
+	}
+	
+	public String getRemoteHost(HttpServletRequest request){
+	    String ip = request.getHeader("x-forwarded-for");
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getHeader("Proxy-Client-IP");
+	    }
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getHeader("WL-Proxy-Client-IP");
+	    }
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getRemoteAddr();
+	    }
+	    return ip.equals("0:0:0:0:0:0:0:1")?"127.0.0.1":ip;
+	}
 	
 	
 
@@ -226,15 +263,16 @@ public class DataExchangeJob{
 	private String getlsh() {
 		String lsh = null;
 		try {
-			TmriJaxRpcOutAccessServiceStub trias = new TmriJaxRpcOutAccessServiceStub();
-			TmriJaxRpcOutAccessServiceStub.QueryObjectOut qo = new TmriJaxRpcOutAccessServiceStub.QueryObjectOut();
+			
+			TmriJaxRpcOutNewAccessServiceStub trias = new TmriJaxRpcOutNewAccessServiceStub();
+			TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qo= new TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut();
 
 			qo.setJkid("01C24");
 			qo.setJkxlh(
 					"7F1C0909010517040815E3FF83F5F3E28BCC8F9B818DE7EA88DFD19EB8C7D894B9B9BCE0BFD8D6D0D0C4A3A8D0C5CFA2BCE0B9DCCFB5CDB3A3A9");
 			qo.setUTF8XmlDoc("<root><QueryCondition></QueryCondition></root>");
 			qo.setXtlb("01");
-
+			setQueryObjectOut(qo);
 			String returnXML = trias.queryObjectOut(qo).getQueryObjectOutReturn();
 
 			Document doc = DocumentHelper.parseText(returnXML);
