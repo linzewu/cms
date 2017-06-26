@@ -71,20 +71,9 @@ public class DataExchangeJob{
 	
 	private void setQueryObjectOut(TmriJaxRpcOutNewAccessServiceStub.QueryObjectOut qo){
 		
-		if(ServletActionContext.getRequest()!=null){
-			Map userMap = (Map)ServletActionContext.getRequest().getSession().getAttribute("user");
-			String ip = getRemoteHost(ServletActionContext.getRequest());
-			String stationCode = (String)userMap.get("StationCode");
-			String idcard = (String)userMap.get("IDCard");
-			String realName =(String)userMap.get("RealName");
-			qo.setYhbz(idcard);
-			qo.setYhxm(realName);
-			qo.setZdbs(ip);
-		}else{
-			qo.setYhbz("");
-			qo.setYhxm("");
-			qo.setZdbs("10.39.147.6");
-		}
+		qo.setYhbz("");
+		qo.setYhxm("");
+		qo.setZdbs("10.39.147.6");
 		qo.setDwjgdm("");
 		qo.setDwmc("");
 		

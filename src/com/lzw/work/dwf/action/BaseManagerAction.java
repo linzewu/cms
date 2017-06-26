@@ -2,7 +2,6 @@ package com.lzw.work.dwf.action;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +10,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -31,8 +27,11 @@ import com.lzw.work.multiple.manager.MultipleManagerAbstract;
 import com.lzw.work.sqls.SQLAbstract;
 import com.opensymphony.xwork2.ModelDriven;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @Scope("prototype")
-@Controller("baseManagerAction")
+@Component("baseManagerAction")
 public class BaseManagerAction extends BaseAction implements
 		ModelDriven<BaseEntity> {
 
